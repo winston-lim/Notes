@@ -321,10 +321,13 @@ getWinner(null, 5) //5 is returned, null does not cause default value to be take
 
 // 17. DOM
 // --Document Object Model
-//  >>>After engine parses and renders HTML code, HTML elements are represented as Javascript Objects in the DOM, for us to access with Javascript methods such as query methods
+//  >>>After engine parses and renders HTML code, HTML elements are represented as Javascript Objects in the DOM by the browser, for us to access with Javascript methods such as query methods
 //  >>> DOM is one of the many web APIs the browser exposes so that we can work with the parsed document
 //  >>> DOM gives us access in 2 ways, through exposing the root DOM node, which exposes all HTML content and through providing methods such of querying elements etc
-// --Window
-//  >>> Besides the document object, another global object the browser exposes is the window object, which has document as its property
+//  >>> DOM is not strictly found only in browsers, there are external plugins for other programming languages that also parse HTML code to produce a DOM
+// --Window vs document
+//  >>> Window is the main Javasript object root aka the Global Object in a browser, which is also the root of the DOM
+//  >>> Everything you access in the browser is a property of the window. For example to accees document, instead of window.document you can just write document. To access screen, screen(and not window.screen)
+//  >>> Document is the main object of the potentially visible/rendered DOM, is the Root DOM node, is a property of window
 //  >>> it is the active window/tab open, and it is the initial/root entry point
 //  >>>provides windows specific properties
