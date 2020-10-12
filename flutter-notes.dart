@@ -8,12 +8,13 @@
 // 5. Animation in Flutter(there is some in ShopApp)
 // 6. AppBar actions widgets such as PopupMenuButton
 // 7. CustomScrollView and Slivers
+// 8. Reponsive/Adaptive Design - Builder() and LayoutBuilder() 
 
 // ----- APIs used -----
 // 0. shopApp4 realtime database, REST API
 // 1. placesApp5 sqlite, Google Maps, location, Image picker, dart:io
 // 2. chatApp6 cloud_firestore,firebase_auth,firebase_storage & firebase_messaging
-
+// 3. field-works(squoosh.app to reduce image file size)
 // ###### FROM TRANSACTION TRACKER APP
 // 1. List.generate and DateFormat.E()
     List<Map<String, Object>> get groupedTransactionValues {
@@ -938,5 +939,15 @@ StreamBuilder(
   },
 ),
 
-// ##### PUBLISHING TO APPSTORE
-// 1. 
+// ##### FieldWorks
+RichText(
+  // The RichText widget displays text that uses multiple different styles. The text to display is described using a tree of TextSpan objects, each of which has an associated style that is used for that subtree.
+  // The text might break across multiple lines or might all be displayed on the same line depending on the layout constraints.
+  text: TextSpan(
+    children: [
+      TextSpan(
+          text: "FIELDWORKS",
+          style: Theme.of(context).textTheme.headline4)
+    ],
+  ),
+)
