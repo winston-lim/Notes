@@ -571,3 +571,41 @@
   // 1. .remove() removes the entire element from the DOM
   // 2. .remvoeChild() does the same thing, but has better support
   // *Use element.parentElement.removeChild() as it has the most support
+
+// 24. Movie Library Practice Project
+  // *input.value
+    // input has a value property and not a textContent property.
+    // input.value gives you the current input text, so if you want to clear inputs after user cancels a form,
+    function clearModalFormInputs() {
+      for (const userInput of modalFormInputs) {
+        userInput.value = "";
+      }
+    }
+  // *Modal Sheets and Backdrop
+    // This project includes code for Modal Sheets appearing after triggering a listener ==button
+    function toggleMovieModal() {
+      addMovieModal.classList.toggle("visible");
+      toggleBackdrop();
+    }
+    function closeMovieModal() {
+      addMovieModal.classList.remove("visible");
+    }
+  // *Bind
+    // Using .bind to pass in arguments without calling function
+    newMovieElement.addEventListener("click", deleteMovieHandler.bind(null, id))
+  // *cloneNode hack to remove listeners
+    // In a scenario where 
+    // 1) User presses button, modal sheet with form appears
+    // 2) Event handlers for buttons are set up
+    // 3) User cancels form
+    // 4) User opens form again
+    // BY DEFAULT, Javascript is smart enough to replace existing listeners, however in some cases, it cannot.
+    // For exmaple, if an anonymous function was passed in, similar to below.
+    // And we have no convenient way of modifying code, then we use the hack below:
+    let acceptButton = rejectButton.nextElementSibling;
+    // if this is not first time user opens form, then acceptButton points to same object, and multiple listeners are set up.
+    acceptButton.replaceWith(acceptButton.cloneNode(true));
+    // Here, we replace the current object with a deep clone, then reinitialize acceptButton with new object.
+    acceptButton = rejectButton.nextElementSibling;
+    // Since reference to old object is gone, garbage collector removes it along with its listeners.
+    acceptButton.addEventListener("click", () => deleteMovie(id));
