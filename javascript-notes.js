@@ -335,6 +335,14 @@
     getWinnder(undefined, 5) //default value is taken when undefined is passed in, so 10 is returned (10>5)
     getWinner(null, 5) //5 is returned, null does not cause default value to be taken ONLY undefined does.
 
+    const sumArray = (prevValue, currentValue, currentIndex, arr) => {
+      return prevValue+currentValue;
+    }
+    // since currentIndex and arr is not used, it can be removed. Since function block only has 1 line- return statement, curly braces can be omitted
+    const shortForm = (prevValue, currentValue) => prevValue+currentValue;
+
+    // What if we want to return an object for a single line function? We wrap the object in parenthesis
+    const people = [...persons.map((value) => ({name: value.name, age: value.age}))]
 
 // 16. DOM
     // *Document Object Model
@@ -609,3 +617,346 @@
     acceptButton = rejectButton.nextElementSibling;
     // Since reference to old object is gone, garbage collector removes it along with its listeners.
     acceptButton.addEventListener("click", () => deleteMovie(id));
+
+// 25. Iterables and iterators
+  // *What is an iterable/iterator : A iterable is an interface that provides an iterator. A iterator is an interface which has the implementation to iterate over elements.
+  // *Why the need for iterables: Iterables are what allows us to make objects useable in a for...of loop
+  // *When the for...loop starts it checks if a method "Symbol.iterator" is available and it calls it, else it goes up the prototype chain, if it's still not available it throws a TypeError.
+    // Iterable: Objects that represent a series of elements that can be iterated over, does not have iteration state but has one method that produces an iterator.
+    // An iterable must satsify the iterable protocol
+      // Iterable protocol: allows JavaScript objects to define or customize their iteration behavior, such as what values are looped over in a for...of construct.
+        // An object is an iterable if it implements the @@iterator method
+        // @@iterator key == [Symbol.iterator] constant
+        // *Examples of iterables:  NodeList, String, Map, Set
+    // Iterator: An object with iteration state, has multiple methods, such as hasNext() which checks if 
+      // Iterator protocol: defines a standard way to produce a sequence of values (either finite or infinite), and potentially a return value when all values have been generated.
+        // An object is an iterator when it implements a next() method with the following semantics:
+          // A zero-argument function that returns an object with at least the following two properties:
+            // done (boolean) : Has the value false if the iterator was able to produce the next value in the sequence OR  
+            // true if the iterator has completed its sequence. In this case, value optionally specifies the return value of the iterator.
+            // value : Any JavaScript value returned by the iterator. Can be omitted when done is true.
+          // The next() method must always return an object with appropriate properties including done and value 
+          // If a non-object value is returned, such as false or undefined, a TypeError is thrown
+      // Example of an iterable that satisfies both the Iterator Protocol and Iterable Protocol
+      let obj = {
+        start : 1,
+        end : 5
+      };
+    
+      //for..of initially calls this method
+      obj[Symbol.iterator] = function() {
+          //iterator object that is returned
+        return {
+            start : this.start,
+            end : this.end,
+            //next is called on each iteration
+          next : function(){
+            if (this.start <= this.end) {
+                return { done : false, value : this.start++};
+            } else{
+                return { done : true };
+            }
+          }
+        }
+      }
+  
+  // *Array-like
+    // When we say a NodeList is array-like, we mean that certain array methods work, that it is an iterator.
+    // *However, arrays-like objects are simply objects that have 
+    // *1) indexes(0,1,2,etc..) and 
+    // *2) a length property just like normal arrays.
+    // Array-likeobjects do not have the Symbol.iterator method implemented, but are considered as iterables
+    // Array-like objects can be used in a for loop, similar to arrays.
+    // Array-like objects do not have all Array methods, hence they are iterables that are not exactly arrays, which is why functions like .from() exist.
+    // *Examples of array-like objects: NodeList, String
+
+// 26. Arrays
+  // *1.Creating arrays
+    // a) const array = [1,2,3]
+    // b) const array1 = new Array(1,2,3) // creates (3), [1, 2, 3]
+      // if you pass in only 1 argument and that argument is an integer, then the argument is taken as value arrayLength.
+      // only if you pass in more than 1 integer argument will the arguments not be used for arrayLength parameter.
+      const array1 = new Array(5) //creates (5), []
+    // c) const array2 = Array.of(1,2) //creates (2) [1,2]
+    // d) Using .from() which converts an iterable or array-like object into an array
+    const array2 = Array.from("Hi!"); //creates (3), ["H", "i", "!"]
+
+  // *2. Array Methods
+  const hobbies = ["Sports", "Music"]
+
+    // *.push == .append
+      // .push(...items: <type>[])
+      hobbies.push('Reading') //returns 3, mutates hobbies to (3), ["Sports", "Music", "Reading"]
+      hobbies.push(el1,el2,el3) //appends multiple elements at once
+
+    // *.unshift
+      hobbies.unshift("Coding") //returns 4, mutaties hobbies to (4), ["Coding", "Sports", "Music", "Reading"]
+
+    // *.pop()
+      hobbies.pop() //returns "Reading", mutates hobbies to (3), ["Coding", "Sports", "Music"]
+
+    // *.shift()
+      hobbies.shift() //returns "Coding", mutates hobbies to (2), ["Sports", "Music"]
+
+    // *Indexing
+      hobbies[1] = "Coding" //returns "Coding", mutates hobbies to (2), ["Sport", "Coding"]
+
+    // *Indexing with index > Array.length (ALLOWED IN JS)
+      hobbies[5] = "Reading" // mutates hobbies to (6), ["Sport", "Coding", Empty x3, "Reading"]
+      // hobbies[4] returns undefined
+
+    // *Splicing  - only available on arrays(array-like and other iterables don't work)
+      // .splice(start: number, deleteCount: number, ...items: string[])
+      hobbies.splice(2,3) // returns [empty],  mutates hobbies to (3), ["Sport", "Coding", "Reading"]
+      hobbies.splice(1,0, "Eating") //returns [], mutates hobbies to (4), ["Sport", "Eating", "Coding", "Reading"]
+      hobbies.splice(2, 0, "Running", "Bowling") // returns [], mutates hobbies to (6), ["Sport", "Eating", "Running", "Bowling", "Coding", "Reading"]
+      hobbies.splice(-2,2) // returns ["Coding", "Reading"], mutates hobbies to (4),  ["Sport", "Eating", "Running", "Bowling"]
+
+    // *.slice() python equivalent is list[start:end]
+      // .slice(start: number, end: number)
+      hobbies.slice(0,2) // returns ["Sport", "Eating"]
+      hobbies.slice(-3,-1) //returns ["Eating", "Running"]
+      hobbies.slice(-3, 1) //returns [], doesnt work.
+      hobbies.slice(2) // returns ["Running", "Bowling"], is Python equivalent of [2:]
+      hobbies.slice(undefined||null, 2) // is equivalent of [:2]
+      hobbies.slice() // *returns copy of array, is equivalent of [:]
+
+    // *.concat()
+      // .concat(...items : ConcatArray<type>[])
+      // combines another array with self, returns a new array.
+      // unlike .push() which will nest the argument within self.
+
+    // *.indexOf() & lastIndexOf()
+      // .indexOf/lastIndexOf(searchElement: number, fromIndex?: number)
+      // returns first/last matching value's index.
+      // returns -1 if value does not exist in array
+      hobbies.indexOf("Running", 1) // returns 2.
+      // *Works only for values that are primitive values.
+      const personData = [{name: "Max"}, {name: "Winston"}]
+      personData.indexOf({name: "Max"}) // returns -1
+
+    // *.includes()
+      // .includes(searchElement: number, fromIndex?: number)
+      // returns true or false, does not work for reference values also.
+
+    // *.find() and .findIndex()
+      // .find(predicate: (value, index, arrayName) => {})
+      // returns value of first element in the array where the predicate is true OR undefined if otherwise
+      const currentUser = personData.find((value, index, arrayName)=>value.name =='Winston'); // returns {name: "Winston"}
+      // Since both the object in the array, and currentUser has the same reference to memory, changing one will update the other
+      // .findIndex is the exact same except it returns the first INDEX of the value where the predicate is true.
+    
+    // *.forEach()
+      // .forEach((value, index, arrayName)=>{})
+      // applies the anonymous function on each value
+      const prices  = [15, 24, 37, 12];
+      const taxRate = 0.19;
+      prices.forEach((value, index, arrayName) => {
+        arrayName[index] = value*(1+taxRate)
+      })
+      // prices = [17.849999999999998, 28.56, 44.03, 14.28]
+    // *.map()
+      // .map((value, index, arrayName) => {any})
+      // .map applies a function on each value in the array where each function call returns a new element
+      // *unlike forEach, the function here MUST return something
+      // .map() returns a new array of the new elements that were returned by each function call
+      const adjustedPrices = prices.map((value, index, arrayName)=> {
+        return value*(1+taxRate)
+      })
+      // adjustPrices equates to [21.241499999999995, 33.986399999999996, 52.3957, 16.993199999999998];
+    
+    // *.sort()
+      // .sort(compareFn: (num1, num2) => number);
+      // .sort() when called on an array, automatically converts all values into strings to compare them, IF there is no compareFn provided
+      // returns the new array after sorting
+      const newPrices = [10.99, 3.99, 5.99, 6.59]
+      newPrices.sort() //returns [10.99, 3.99, 5.99, 6.59]
+      const sortedPrices = newPrices.sort((num1, num2) => {
+        if(num2> num1) {
+          return 1;
+        } else if (num2===num1) {
+          return 0;
+        } else {
+          return -1;
+        }
+      })
+      // returns [10.99, 6.59, 5.99, 3.99]
+    // *.reverse()
+      // reverses the order of an array.
+      sortedPrices.reverse() // returns [3.99, 5.99, 6.59, 10.99]
+
+    // *.filter()
+      // .filter(predicate: (value,index, arr)=> bool )
+      // returns a brand new value where each value satisfies the predicate
+      newPrices.filter((value,index, arr) => value>3); // returns [5.99, 6.59, 10.99]
+
+    // *.reduce()
+      // .reduce((prevValue, currentValue, currentIndex, arr)=>{}, intialValue)
+      newPrices; //[10.99, 6.59, 5.99, 3.99]
+      const sum = newPrices.reduce((prevValue, currentValue, currentIndex, arr) => {
+        return prevValue+currentValue;
+      }, 0)
+      // returns 10.99+6.59+5.99+3.99 = 27.56
+      // prevValue = inital value for first reducer function execution
+      // subsequently, prevValue = result returned from previous reducer function execution
+      // currentValue = value of element in array of currentIndex
+
+  // *String <-> Array Conversion
+    // *.split()
+      // .split(separator: String)
+      const data = "winston;20;nus;";
+      const dataArray = data.split(";") //returns ["winston", "20", "nus"]
+    // *.join()
+      // .join()
+      const name = ["Winston", "Lim"]
+      const greeting = name.join(); //returns "Winston,Lim"
+      const greeting1 = name.join(" "); //returns "Winston Lim"
+  
+  // *Array Destructuring
+  const nameData = ["Winston", "Lim"];
+  // const firstName = nameData[0];
+  // const lastName = nameData[1];
+  const [firstName, lastName] = nameData;
+  firstName; //returns "Winston"
+  lastName; //returns "Lim"
+
+  const userData = ["Winston Lim", 20, "Gymnastics", "Computer Engineering"];
+  const [name, age, ...otherData] = userData;
+  // ... is the rest operator in this case, takes all other elements in array that are not assigned and puts them in an array.
+  // otherData evaluates to ["Gymnastics", "Computer Engineering"]
+  
+//*27. Sets and Maps
+  //*Sets
+    // Similar to arrays, sets are iterables and store (nested) data of any type and length
+    // Sets have some special set methods, and array methods cannot be used on sets
+      // *Again, you can convert a set using .from()
+    // *Special characteristics of sets
+      // Unlike arrays, order is NOT guaranteed
+      // Duplicates are NOT allowed
+      // There is no index-based access to elements in a set
+
+    // *Creating a Set
+      const set = new Set() // set = Set(0) {}
+      // Set(iterable: Iterable<any>)
+      const set1 = new Set([1,2,3]) //set1 = Set(3) {1,2,3}
+    
+    // *Obtaining values from a Set
+      // *Single Elements
+        // There are no getter methods for a set, but .has(value) returns a bool from checking if a set contains a value
+      
+      // *Multiple Elements
+        // .values() returns an Iterable of values of all elements in a Set
+          for (const entry of set1.values()) {
+            console.log(entry)
+          }
+          // returns 1 2 3
+        // .entries() returns an Iterable of arrays of [value,value] of all elements in the Set
+          for (const entry of set1.entries()) {
+            console.log(entry);
+          }
+          // returns [1,1] [2,2] [3,3]
+          // .entries() is a method available for Maps also, which may explain why there are pairs of value per element in a Set
+
+    //* Adding/Deleting Values from a Set
+      // *.add()
+        set1.add(4) //returns Set(4) {1,2,3,4}
+        // .add(value) 
+        // if value already exists in the Set, no error is thrown, but nothing happens also
+      // *.delete
+        set1.delete(4) //returns true, set1 mutates to Set(3) {1,2,3}
+        // .delete(value)
+        // if value does not exist in set, returns false and set is not mutated
+       
+
+  
+  //*Maps
+    // Store key-value data of any kind and length, *ANY key values are allowed
+      // *Unlike objects, where keys must be strings, any value is accepted for keys in a Map
+    // Is also an iterable with special map methods
+    // Order is guranteed
+    // Duplicate keys are NOT allowed, but duplicate values are allowed
+    // There is key-based access to elements in a map.
+
+    // *Creating a Map
+      const person1 = {name: "Winston"}
+      const person2 = {name: "Map"}
+      const personData = new Map([[person1, {date: "17/10/2020", time: "1125"}]]);
+      // .map(iterable: Iterable<any>) accepts an Iterable that typically contains pairs of values, which will be the key-value pairs in created map
+      // personData = {{name: "Winston"} : {date: "17/10/2020", time: "1125"}}
+
+      // *Adding Values
+      personData.set(person2, {date: "18/10/2020", time: "1230"});
+      // .set(key<any>:value<any>)
+      //personData = {{name: "Winston"} : {date: "17/10/2020", time: "1125"}, {name: "Map"}: {date: "18/10/2020", time: "1230"}}
+
+      // *Retrieving values
+        // *Single values
+          const person1Data = personData.get(person1)
+          // .get(key: any) returns value of the key which is {date: "17/10/2020", time: "1125"}
+        
+        // *Multiple values
+          // *.entries()
+            for (const entry of personData.entries()) {
+              console.log(entry)
+            }
+            // returns [{name: "Winston"}, {date: "17/10/2020", time: "1125"}] , [ {name: "Winston"}, {date: "18/10/2020", time: "1230"}]
+            // Another syntax (array destructuring) that is possible because we know entries returns an iterable containg arrays of key-value pairs is:
+            for (const [key, value] of personData.entries()) {
+              console.log(key,value);
+            }
+          
+          //*.keys()
+            // returns an iterable of keys of a map
+            for (const key of personData.keys()) {
+              console.log(key);
+            }
+          
+          // *values()
+            // returns an iterable of values of a map
+            for (const value of personData.values()) {
+              console.log(value);
+            }
+      
+      // *Other methods
+        // *.clear() empties the map
+        // *.delete(key: any) deletes a single entry by key
+        // *.forEach(()=>{}) runs a function on each entry
+        // *.has(key: any) checks if a key is in a map
+        // *NOT A METHOD but a property, .size returns how many items are in a map
+
+      // *Maps vs Objectgs
+        // Keys: Maps can have ANY value for their key, while Objects are restricted to strings, numbers and symbols
+        // Performance: For large quantities of data, Maps have better performance
+        // Methods: Ways to manipulate entires, are only available for objects
+      
+    // *WeakSet
+      const persons = new WeakSet()
+      persons.add(person1) //persons = {{name: "Winston"}}
+      // Can only store objects as values(arrays therefore are allowed)
+      person1 = null
+      // When person1 is set to null, the object {name: "Winston"} is usually cleared by the garbage collector as it is not in use
+      // However, if you person1 has a reference in a Set(), then the Set still holds a reference to the object, and it will not be cleared unless you delete that value.
+      // But in a weakset, values not used will automatically be removed and released to garbage collector
+      // Methods available: .add(), .delete(), .has()
+
+    // *WeakMap
+      // Same as WeakSet
+
+
+  
+
+
+
+
+
+
+      
+
+
+
+
+
+  
+    
+
+    

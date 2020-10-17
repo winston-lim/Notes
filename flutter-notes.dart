@@ -951,3 +951,14 @@ RichText(
     ],
   ),
 )
+
+Material(
+  borderRadius: BorderRadius.circular(7.0),
+  elevation: 4.0,
+  // Elevation gives the Container a hover effect with shadow,
+  // Containers do not have elevation property. Wrapping it in Material allows so
+  child: Container(
+    height: 125.0,
+    width: double.infinity,
+    decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(7.0), color: Colors.white),),)
