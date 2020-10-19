@@ -940,6 +940,7 @@ StreamBuilder(
 ),
 
 // ##### FieldWorks
+// *RichText
 RichText(
   // The RichText widget displays text that uses multiple different styles. The text to display is described using a tree of TextSpan objects, each of which has an associated style that is used for that subtree.
   // The text might break across multiple lines or might all be displayed on the same line depending on the layout constraints.
@@ -952,6 +953,7 @@ RichText(
   ),
 )
 
+// *Material
 Material(
   borderRadius: BorderRadius.circular(7.0),
   elevation: 4.0,
@@ -962,3 +964,59 @@ Material(
     width: double.infinity,
     decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7.0), color: Colors.white),),)
+
+// *Size Config
+class SizeConfig {
+  static MediaQueryData _mediaQueryData;
+  static double screenWidth;
+  static double screenHeight;
+  static double blockSizeHorizontal;
+  static double blockSizeVertical;
+  static double _safeAreaHorizontal;
+  static double _safeAreaVertical;
+  static double safeBlockHorizontal;
+  static double safeBlockVertical;
+  static double testHorizontal;
+  static double testVertical;
+
+  void init(BuildContext context) {
+    _mediaQueryData = MediaQuery.of(context);
+    screenWidth = _mediaQueryData.size.width;
+    screenHeight = _mediaQueryData.size.height;
+    blockSizeHorizontal = screenWidth / 100;
+    blockSizeVertical = screenHeight / 100;
+    _safeAreaHorizontal =
+        _mediaQueryData.padding.left + _mediaQueryData.padding.right;
+    _safeAreaVertical =
+        _mediaQueryData.padding.top + _mediaQueryData.padding.bottom;
+    safeBlockHorizontal = (screenWidth - _safeAreaHorizontal);
+    safeBlockVertical = (screenHeight - _safeAreaVertical);
+    testHorizontal = _safeAreaHorizontal + screenWidth;
+    testVertical = _safeAreaVertical + screenHeight;
+    print([safeBlockHorizontal, screenWidth, _safeAreaHorizontal]);
+    print([safeBlockVertical, screenHeight, _safeAreaVertical]);
+  }
+}
+
+// Get the proportionate height as per screen size
+double getProportionateScreenHeight(double inputHeight) {
+  double screenHeight = SizeConfig.safeBlockVertical;
+  // 812 is the layout height that designer use
+  return (inputHeight / 659.43) * screenHeight;
+}
+
+// Get the proportionate height as per screen size
+double getProportionateScreenWidth(double inputWidth) {
+  double screenWidth = SizeConfig.safeBlockHorizontal;
+  // 375 is the layout width that designer use
+  return (inputWidth / 411.43) * screenWidth;
+}
+
+// *Text() props
+ Text(
+  "Blk, 166 Bukit Merah Central, #01-3531, 150166",
+  style: TextStyle(color: Color(0xFF6E8383)),
+  overflow: TextOverflow.ellipsis,
+  maxLines: 2,
+  textAlign: TextAlign.left,
+),
